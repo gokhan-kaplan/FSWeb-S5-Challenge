@@ -1,3 +1,4 @@
+const axios = require("axios");
 const Tablar = (konu) => {
   // GÖREV 3
   // ---------------------
@@ -13,7 +14,18 @@ const Tablar = (konu) => {
   //   <div class="tab">teknoloji</div>
   // </div>
   //
-}
+  const topicsDiv = document.createElement("div");
+  topicsDiv.classList.add("topics");
+
+  konu.forEach((k) => {
+    const tabDiv = document.createElement("div");
+    tabDiv.classList.add("tab");
+    tabDiv.textContent = k;
+    topicsDiv.appendChild(tabDiv);
+  });
+
+  return topicsDiv;
+};
 
 const tabEkleyici = (secici) => {
   // GÖREV 4
@@ -23,6 +35,22 @@ const tabEkleyici = (secici) => {
   // Yanıtın içindeki konu dizisini bulun ve Tablar bileşenini kullanarak tabları oluşturun.
   // Tabları, fonksiyona iletilen seçiciyle eşleşen DOM'daki öğeye ekleyin.
   //
-}
-
-export { Tablar, tabEkleyici }
+  //Burada bir hata var.
+  axios
+    .get("http://localhost:5001/api/konular")
+    .then((response) => {
+      if (response.status === 200) {
+        const konuData = response.data;
+        const konuArray = konuData.konu;
+        const tablar = Tablar(konuArray);
+        const targetElement = document.querySelector(secici);
+        targetElement.appendChild(tablar);
+      } else {
+        console.error("API'den veri alınamadı.");
+      }
+    })
+    .catch((error) => {
+      console.error("API'ye istek gönderilirken hata oluştu: " + error);
+    });
+};
+export { Tablar, tabEkleyici };
